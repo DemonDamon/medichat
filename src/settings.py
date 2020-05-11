@@ -7,24 +7,38 @@ class setting:
 		self.cpu_id = '/cpu:0'
 		self.gpu_id = '/gpu:0'
 
-		self.text_cls_test_dir      = '../data/text_classification_dataset/test_data.txt'
-		self.text_cls_train_dir     = '../data/text_classification_dataset/train_data.txt'
-		self.text_cls_vocab_dir     = '../models/text_classification_models/id2words.vab'
-		self.text_cls_embedding_dir = '../models/text_classification_models/word2vec_model.npy'
+		self.text_cls_test_dir      = './data/text_classification_dataset/test_data.txt'
+		self.text_cls_train_dir     = './data/text_classification_dataset/train_data.txt'
+		self.text_cls_vocab_dir     = './models/text_classification_models/id2words.vab'
+		self.text_cls_embedding_dir = './models/text_classification_models/word2vec_model.npy'
+
+		# self.text_cls_test_dir      = 'D:\\workfiles\\gpus私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\text_classification_dataset\\test_data.txt'
+		# self.text_cls_train_dir     = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\text_classification_dataset\\train_data.txt'
+		# self.text_cls_vocab_dir     = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\text_classification_models\\id2words.vab'
+		# self.text_cls_embedding_dir = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\text_classification_models\\word2vec_model.npy'
 
 		self.text_cls_dropout_prob     = 1.0
 		self.text_cls_sentence_len     = 20
 		self.text_cls_num_checkpoints  = 1
 		self.text_cls_val_sample_ratio = 0.2
-		self.text_cnn_model_save_dir = '../models/text_classification_models/trained_saved_model'
+		self.text_cnn_model_save_dir = './models/text_classification_models/trained_saved_model/'
+		# self.text_cnn_model_save_dir = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\text_classification_models\\trained_saved_model'
 
-		self.ner_test_dir         = '../data/ner_dataset/test_data.txt'
-		self.ner_train_dir        = '../data/ner_dataset/train_cutword_data.txt'
-		self.ner_vocab_dir        = '../models/ner_models/document.txt.vab'
-		self.ner_embedding_dir    = '../models/ner_models/document.txt.ebd.npy'
-		self.ner_test_label_dir   = '../data/ner_dataset/test_label.txt'
-		self.ner_train_label_dir  = '../data/ner_dataset/label_cutword_data.txt'
-		self.ner_model_checkpoint = '../models/ner_models/trained_saved_model'
+		self.ner_test_dir         = './data/ner_dataset/test_data.txt'
+		self.ner_train_dir        = './data/ner_dataset/train_cutword_data.txt'
+		self.ner_vocab_dir        = './models/ner_models/document.txt.vab'
+		self.ner_embedding_dir    = './models/ner_models/document.txt.ebd.npy'
+		self.ner_test_label_dir   = './data/ner_dataset/test_label.txt'
+		self.ner_train_label_dir  = './data/ner_dataset/label_cutword_data.txt'
+		self.ner_model_checkpoint = './models/ner_models/trained_saved_model/'
+
+		# self.ner_test_dir         = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\ner_dataset\\test_data.txt'
+		# self.ner_train_dir        = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\ner_dataset\\train_cutword_data.txt'
+		# self.ner_vocab_dir        = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\ner_models\\document.txt.vab'
+		# self.ner_embedding_dir    = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\ner_models\\document.txt.ebd.npy'
+		# self.ner_test_label_dir   = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\ner_dataset\\test_label.txt'
+		# self.ner_train_label_dir  = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\data\\ner_dataset\\label_cutword_data.txt'
+		# self.ner_model_checkpoint = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\ner_models\\trained_saved_model'
 
 		self.ner_tag_nums         = 13  # 标签数目
 		self.ner_batch_size       = 100

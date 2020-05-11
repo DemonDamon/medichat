@@ -336,7 +336,7 @@ if __name__ == '__main__':
                        vocab_processor_dir='',
                        l2_reg_lambda=setting.l2_lambda,
                        batch_size=64,
-                       num_epochs=10,
+                       num_epochs=200,
                        num_checkpoints=setting.text_cls_num_checkpoints,
                        evaluate_every=100,
                        dev_sample_percentage=0.1,

@@ -41,6 +41,7 @@ class text_classifier(object):
                                         l2_reg_lambda=setting.l2_lambda,
                                         is_inference=True,
                                         device_id=setting.cpu_id)
+
                 self.text_cnn.build_model()
 
                 self.saver = tf.train.Saver(max_to_keep=setting.text_cls_num_checkpoints)
