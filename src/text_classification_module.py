@@ -27,15 +27,6 @@ class text_classifier(object):
 
                 self.text_cls_data_loader.load_embedding()
 
-                # self.text_cnn = TextCNN(word2vec_embedding=self.text_cls_data_loader.embedding,
-                #                         sequence_length=setting.text_cls_sentence_len,
-                #                         num_classes=setting.num_classes,
-                #                         embedding_size=setting.embedding_dim,
-                #                         filter_sizes=list(map(int, setting.filter_sizes.split(" "))),
-                #                         num_filters=setting.num_filters,
-                #                         l2_reg_lambda=setting.l2_lambda,
-                #                         device=setting.cpu_id)
-
                 self.text_cnn = TextCNN(embedding_dir=setting.text_cls_embedding_dir,
                                         sequence_length=setting.text_cls_sentence_len,
                                         num_classes=setting.num_classes,
@@ -84,8 +75,6 @@ if __name__ == '__main__':
                                           allow_soft_placement=allow_soft_placement,
                                           log_device_placement=log_device_placement)
 
-    # setting.text_cnn_model_save_dir = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\data_ai\\classifyModel'
-    setting.text_cnn_model_save_dir = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\data_ai\\textCNNModel\\1589006433' #\\checkpoints'
     sess     = tf.compat.v1.Session(graph=graph, config=session_conf)
     test_obj = text_classifier(sess, setting)
     while True:
