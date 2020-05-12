@@ -17,6 +17,10 @@ class text_classifier(object):
 
         with tf_session.as_default():
             with tf_session.graph.as_default(): # 定义属于计算图graph的张量和操作
+                latest_save_time = max([int(dir) for dir in os.listdir(setting.text_cnn_model_save_dir)])
+
+                latest_checkpoint_dir = os.path.join(setting.text_cnn_model_save_dir, str(latest_save_time))
+
                 self.text_cls_dropout_prob = setting.text_cls_dropout_prob
 
                 self.text_cls_data_loader = text_cls_data_loader(setting)
@@ -37,7 +41,7 @@ class text_classifier(object):
                                         num_classes=setting.num_classes,
                                         filter_sizes=list(map(int, setting.filter_sizes.split(" "))),
                                         num_filters=setting.num_filters,
-                                        vocab_processor_dir=os.path.join(setting.text_cnn_model_save_dir, 'vocab'),
+                                        vocab_processor_dir=os.path.join(latest_checkpoint_dir, 'vocab'),
                                         l2_reg_lambda=setting.l2_lambda,
                                         is_inference=True,
                                         device_id=setting.cpu_id)
@@ -45,7 +49,7 @@ class text_classifier(object):
                 self.text_cnn.build_model()
 
                 self.saver = tf.train.Saver(max_to_keep=setting.text_cls_num_checkpoints)
-                ckpt       = tf.train.get_checkpoint_state(os.path.join(setting.text_cnn_model_save_dir, 'checkpoints'))
+                ckpt       = tf.train.get_checkpoint_state(os.path.join(latest_checkpoint_dir, 'checkpoints'))
 
                 if ckpt and ckpt.model_checkpoint_path:
                     self.saver.restore(tf_session, ckpt.model_checkpoint_path)

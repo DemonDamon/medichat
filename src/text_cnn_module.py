@@ -147,12 +147,12 @@ class TextCNN(object):
         l2_loss = tf.constant(0.0)
 
         # Embedding layer
-        with tf.device(self.device), tf.name_scope("embedding"):
-            # self.W = tf.Variable(
+        with tf.device(self.device):
+            # word_embeddings = tf.Variable(
             #     tf.random.uniform([self.vocab_size, self.embedding_dim], -1.0, 1.0),
             #     name="W") # 不用预训练embedding
-            self.W = tf.Variable(initial_value=self.embedding, trainable=True, name="W") # 使用预训练embedding模型
-            self.embedded_chars = tf.nn.embedding_lookup(self.W, self.input_x)
+            word_embeddings = tf.Variable(initial_value=self.embedding, trainable=True) # 使用预训练embedding模型
+            self.embedded_chars = tf.nn.embedding_lookup(word_embeddings, self.input_x)
             self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
 
         # Create a convolution + maxpool layer for each filter size
@@ -211,6 +211,13 @@ class TextCNN(object):
             correct_predictions = tf.equal(self.predictions, tf.argmax(self.input_y, 1))
             self.accuracy = tf.reduce_mean(tf.cast(correct_predictions, "float"), name="accuracy")
 
+        # Precission Recall F1_score
+        with tf.name_scope("confusion_matrix"):
+            self.confusion_matrix = tf.contrib.metrics.confusion_matrix(self.predictions,
+                                                                        tf.argmax(self.input_y, 1),
+                                                                        num_classes=self.num_classes,
+                                                                        dtype=tf.int32, name="confusion_matrix",
+                                                                        weights=None)
 
     def train(self):
         x_train, y_train, vocab_processor, x_dev, y_dev = self.data_processing(self.train_data_dir)
