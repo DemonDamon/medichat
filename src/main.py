@@ -29,11 +29,11 @@ while True:
     if not result_dict:
         print(alternative_answer)
     else:
-        # print('[RESULT] ', result_dict)
+        print('[RESULT] ', result_dict)
         # [RESULT]  {'args': {'高烧': ['symptom'], '不退怎么办': ['disease']}, 'question_types': ['disease_cureway']}
 
         cypher_dict_list = obj_qa.question_parser(result_dict)
-        # print('[CYPHERS] ', cypher_dict_list)
+        print('[CYPHERS] ', cypher_dict_list)
         # [CYPHERS]  [{'question_type': 'disease_symptom', 'cypher': ["MATCH (m:Disease)-[r:has_symptom]->(n:Symptom) where m.name = '风寒感冒' return m.name, r.name, n.name"]}]
 
         answer_list = obj_qa.cypher_to_answer(cypher_dict_list)

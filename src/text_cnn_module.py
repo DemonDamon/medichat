@@ -64,16 +64,16 @@ class TextCNN(object):
         Returns split sentences and labels.
         """
         # Load data from files
-        with open(filepath, 'r', encoding='utf-8',errors='ignore') as f:
+        with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             train_datas = f.readlines()
         one_hot_labels = []
         x_datas = []
         for line in train_datas:
-            parts = line.encode('utf-8').decode('utf-8-sig').strip().split(' ',1)
-            if len(parts)<2 or (len(parts[1].strip()) == 0):
+            parts = line.encode('utf-8').decode('utf-8-sig').strip().split(' ', 1)
+            if len(parts) < 2 or (len(parts[1].strip()) == 0):
                 continue
             x_datas.append(parts[1])
-            one_hot_label = [0]*self.num_classes
+            one_hot_label = [0] * self.num_classes
             label = int(parts[0])
             one_hot_label[label] = 1
             one_hot_labels.append(one_hot_label)
@@ -335,7 +335,7 @@ if __name__ == '__main__':
                        model_save_dir=setting.text_cnn_model_save_dir,
                        vocab_processor_dir='',
                        l2_reg_lambda=setting.l2_lambda,
-                       batch_size=64,
+                       batch_size=300, #64
                        num_epochs=200,
                        num_checkpoints=setting.text_cls_num_checkpoints,
                        evaluate_every=100,

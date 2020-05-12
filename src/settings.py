@@ -41,10 +41,10 @@ class setting:
 		# self.ner_model_checkpoint = 'D:\\workfiles\\gpu私有云代码备份\\chatbot-base-on-Knowledge-Graph-master\\medichat\\models\\ner_models\\trained_saved_model'
 
 		self.ner_tag_nums         = 13  # 标签数目
-		self.ner_batch_size       = 100
+		self.ner_batch_size       = 300
 		self.ner_hidden_nums      = 650  # bi-lstm的隐藏层单元数目
 		self.ner_sentence_len     = 25 # 句子长度,输入到网络的序列长度
-		self.ner_dropout_prob     = 1.0
+		self.ner_dropout_prob     = 0.5
 		self.ner_val_sample_ratio = 0.1
 
 		self.num_classes = 9
