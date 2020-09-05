@@ -51,19 +51,35 @@ class question_analysis(object):
                                password=self.password)
 
 
-    def qa_builder(self, text):
+    def qa_builder(self, text, debug=False):
         args_dict          = dict()
         result_dict        = dict()
         question_type_list = list()
 
         words_x_list, label_list, seq_len_list = self.ner_obj.ner_builder(self.ner_session, text)
+        if debug:
+            print('[DEBUG] words_x_list = ', str(words_x_list))
+            print('[DEBUG] label_list   = ', str(label_list))
+            print('[DEBUG] seq_len_list = ', str(seq_len_list))
 
         for idx in range(len(words_x_list)):
+            if debug:
+                print('*'*20)
+
             middle_question_list = list()
             _entity = ''
             for elem_id in range(seq_len_list[idx]):
+                if debug:
+                    print('[DEBUG]  idx={}, elem_id={}'.format(idx, elem_id))
+
                 middle_question_list.append(words_x_list[idx][elem_id])
+                if debug:
+                    print('[line77] middle_question_list={}'.format(middle_question_list))
+
                 _entityType = self.reverse_state_dict[int(label_list[idx][elem_id])]
+                if debug:
+                    print('[line81] _entityType={}'.format(_entityType))
+
                 if _entityType[0] == 'B' or _entityType[0] == 'I':
                     _entity += words_x_list[idx][elem_id]
                 elif _entityType[0] == 'E' or _entityType[0] == 'S':
@@ -77,9 +93,17 @@ class question_analysis(object):
                     _entity = ''
                 else:
                     _entity = ''
+                if debug:
+                    print('[line97] _entity={}'.format(_entity))
             question_text = ''.join(middle_question_list)
+            if debug:
+                print('[line100] middle_question_list={}'.format(middle_question_list))
             _classify_idx = self.text_cls_obj.classifier(self.text_cls_session, question_text)
+            if debug:
+                print('[line103] _classify_idx={}'.format(_classify_idx))
             _classify_label = self.reverse_question_label_dict[_classify_idx[0]]
+            if debug:
+                print('[line106] _classify_label={}'.format(_classify_label))
             question_type_list.append(_classify_label)
         result_dict['args'] = args_dict
         result_dict['question_types'] = question_type_list
@@ -365,7 +389,7 @@ if __name__ == "__main__":
         if text == 'exit' or text == 'quit': # eg. 高烧不退怎么办
             print('[INFO] Bye...')
             break
-        result_dict = obj_qa.qa_builder(text)
+        result_dict = obj_qa.qa_builder(text, debug=True)
         print('[RESULT] ', result_dict)
         # [RESULT]  {'args': {'高烧': ['symptom'], '不退怎么办': ['disease']}, 'question_types': ['disease_cureway']}
 
