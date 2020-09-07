@@ -21,19 +21,19 @@ class text_classifier(object):
 
                 latest_checkpoint_dir = os.path.join(setting.text_cnn_model_save_dir, str(latest_save_time))
 
-                self.text_cls_dropout_prob = setting.text_cls_dropout_prob
+                self.text_cls_dropout_prob = setting.text_cls_dropout_prob #1.0
 
                 self.text_cls_data_loader = text_cls_data_loader(setting)
 
                 self.text_cls_data_loader.load_embedding()
 
                 self.text_cnn = TextCNN(embedding_dir=setting.text_cls_embedding_dir,
-                                        sequence_length=setting.text_cls_sentence_len,
-                                        num_classes=setting.num_classes,
-                                        filter_sizes=list(map(int, setting.filter_sizes.split(" "))),
-                                        num_filters=setting.num_filters,
+                                        sequence_length=setting.text_cls_sentence_len, #20
+                                        num_classes=setting.num_classes,#9
+                                        filter_sizes=list(map(int, setting.filter_sizes.split(" "))),#[2,3,4]
+                                        num_filters=setting.num_filters,#128
                                         vocab_processor_dir=os.path.join(latest_checkpoint_dir, 'vocab'),
-                                        l2_reg_lambda=setting.l2_lambda,
+                                        l2_reg_lambda=setting.l2_lambda,#0
                                         is_inference=True,
                                         device_id=setting.cpu_id)
 
@@ -54,8 +54,8 @@ class text_classifier(object):
             with tf_session.graph.as_default():  # 定义属于计算图graph的张量和操作
 
                     text      = text.strip()
-                    seg_list  = list(jieba.cut(text))
-                    x_data    = self.text_cls_data_loader.text_input_to_array(' '.join(seg_list))
+                    seg_list  = list(jieba.cut(text)) # <class 'list'>: ['感冒', 'disease', '吃', '什么', '药']
+                    x_data    = self.text_cls_data_loader.text_input_to_array(' '.join(seg_list)) # 找到分词在词典中对应的id，x_data=[[1270 4278 2465 4270 6940    0    0    0    0    0    0    0    0    0   0    0    0    0    0    0]]
                     feed_dict = {self.text_cnn.input_x: x_data,
                                  self.text_cnn.dropout_keep_prob: self.text_cls_dropout_prob}
                     predict   = tf_session.run([self.text_cnn.predictions], feed_dict)

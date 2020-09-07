@@ -57,6 +57,9 @@ class question_analysis(object):
         question_type_list = list()
 
         words_x_list, label_list, seq_len_list = self.ner_obj.ner_builder(self.ner_session, text)
+        # words_x_list = <class 'list'>: [['感冒', '吃', '什么', '药']]
+        # label_list = <class 'list'>: [[10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+        # seq_len_list = <class 'list'>: [4]
         if debug:
             print('[DEBUG] words_x_list = ', str(words_x_list))
             print('[DEBUG] label_list   = ', str(label_list))
@@ -68,7 +71,7 @@ class question_analysis(object):
 
             middle_question_list = list()
             _entity = ''
-            for elem_id in range(seq_len_list[idx]):
+            for elem_id in range(seq_len_list[idx]):#seq_len_list=[4]
                 if debug:
                     print('[DEBUG]  idx={}, elem_id={}'.format(idx, elem_id))
 
@@ -95,13 +98,18 @@ class question_analysis(object):
                     _entity = ''
                 if debug:
                     print('[line97] _entity={}'.format(_entity))
-            question_text = ''.join(middle_question_list)
+
+            # middle_question_list = <class 'list'>: ['感冒', 'disease', '吃', '什么', '药']
+            question_text = ''.join(middle_question_list) # '感冒disease吃什么药'
             if debug:
                 print('[line100] middle_question_list={}'.format(middle_question_list))
-            _classify_idx = self.text_cls_obj.classifier(self.text_cls_session, question_text)
+            _classify_idx = self.text_cls_obj.classifier(self.text_cls_session, question_text) #_classify_idx=array([3], dtype=int64)
             if debug:
                 print('[line103] _classify_idx={}'.format(_classify_idx))
             _classify_label = self.reverse_question_label_dict[_classify_idx[0]]
+            # self.reverse_question_label_dict = {"disease_symptom": 0, "symptom_curway": 1, "symptom_disease": 2,
+            #                             "disease_drug": 3, "drug_disease": 4, "disease_check": 5,
+            #                             "disease_prevent": 6, "disease_lasttime": 7, "disease_cureway": 8}
             if debug:
                 print('[line106] _classify_label={}'.format(_classify_label))
             question_type_list.append(_classify_label)
@@ -113,6 +121,7 @@ class question_analysis(object):
 
     def build_entity_dict(self, params_dict):
         # 构建实体节点
+        # params_dict = <class 'dict'>: {'感冒': ['disease']}
         entity_dict = dict()
         for param, types in params_dict.items():
             for type in types:
@@ -126,8 +135,9 @@ class question_analysis(object):
 
     def question_parser(self, result_dict):
         # 对qa_builder函数返回的result进行解析处理
+        # result_dict = <class 'dict'>: {'args': {'感冒': ['disease']}, 'question_types': ['disease_drug']}
         args_dict      = result_dict['args']
-        entity_dict    = self.build_entity_dict(args_dict)
+        entity_dict    = self.build_entity_dict(args_dict) # <class 'dict'>: {'disease': ['感冒']}
         question_types = result_dict['question_types']
 
         cypher_dict_list = list() # each element of list is 'dict' type
@@ -171,6 +181,8 @@ class question_analysis(object):
 
 
     def question_to_cypher(self, question_type, entities):
+         # question_type = 'disease_drug'
+         # entities = ['感冒']
         # 针对不同的问题，分开进行处理
         if not entities:
             return None
@@ -264,12 +276,40 @@ class question_analysis(object):
     def cypher_to_answer(self, cypher_dict_list):
         answer_list = list()
         for cypher_dict in cypher_dict_list:
-            question_type = cypher_dict['question_type']
+            question_type = cypher_dict['question_type'] #'disease_drug'
             cypher_list   = cypher_dict['cypher']
+            # cypher_list = <class 'dict'>: {'question_type': 'disease_drug',
+            #                                'cypher': ["MATCH (m:Disease)-[r:common_drug]->(n:Drug) where m.name = '感冒' return m.name, r.name, n.name",
+            #                                           "MATCH (m:Disease)-[r:recommand_drug]->(n:Drug) where m.name = '感冒' return m.name, r.name, n.name"]}
             _answer_list   = list()
             for query in cypher_list:
                 _answer_list += self.neo_graph.run(query).data()
+            # _answer_list = <class 'list'>: [{'m.name': '感冒', 'r.name': '常用药品', 'n.name': '感冒灵颗粒'},
+            #                                 {'m.name': '感冒', 'r.name': '常用药品', 'n.name': '利巴韦林颗粒'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '银芩胶囊'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '喉痛灵片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '头孢拉定胶囊'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '匹多莫德分散片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '风油精'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '肺宁片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '酚咖片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '穿心莲片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '伤风停胶囊'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '依托红霉素片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '消炎片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '头孢丙烯分散片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '洛索洛芬钠胶囊'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '蒲公英颗粒'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '阿莫西林颗粒'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '洛索洛芬钠片'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '感冒灵颗粒'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '愈美胶囊'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '抗病毒口服液'},
+            #                                 {'m.name': '感冒', 'r.name': '好评药品', 'n.name': '麻黄止嗽丸'}]
             final_answer = self.answer_template(question_type, _answer_list)
+            # final_answer = '感冒通常的使用的药品包括：洛索洛芬钠胶囊；酚咖片；蒲公英颗粒；肺宁片；风油精；洛索洛芬钠片；依托红霉素片；
+            #                 麻黄止嗽丸；愈美胶囊；消炎片；抗病毒口服液；利巴韦林颗粒；头孢拉定胶囊；感冒灵颗粒；银芩胶囊；头孢丙烯分散片；
+            #                 伤风停胶囊；喉痛灵片；穿心莲片；匹多莫德分散片'
             if final_answer:
                 answer_list.append(final_answer)
 

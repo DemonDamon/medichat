@@ -47,7 +47,7 @@ class text_cls_data_loader(object):
 
 
     def text_input_to_array(self, text, debug=False):
-        text_array = np.zeros([1, self.config.text_cls_sentence_len], dtype=np.int32)
+        text_array = np.zeros([1, self.config.text_cls_sentence_len], dtype=np.int32) # self.config.text_cls_sentence_len=20
         data_line  = text.strip().split(' ')
         for pos in range(min(len(data_line), self.config.text_cls_sentence_len)):
             text_array[0, pos] = int(self.reverse_word_id_dict.get(data_line[pos], 0))
@@ -242,6 +242,7 @@ class ner_data_loader(object):
 
 
     def input_text_process(self, text, debug=False):
+        # 初步处理输入文本
         words_x_list           = list()
         seq_len_list           = list()
         output_x_list          = list()

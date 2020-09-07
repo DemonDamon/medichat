@@ -19,7 +19,7 @@ class TextCNN(object):
                  embedding_dir, # 预训练模型路径
                  sequence_length, #
                  num_classes,
-                 filter_sizes,
+                 filter_sizes, #[2,3,4]
                  num_filters,
                  train_data_dir='',
                  test_data_dir='',
@@ -35,7 +35,7 @@ class TextCNN(object):
                  is_inference=False,
                  device_id='/gpu:1'):
 
-        self.embedding     = np.load(embedding_dir)
+        self.embedding     = np.load(embedding_dir) #shape=(9703,200), type=numpy.ndarray
         self.embedding_dim = np.shape(self.embedding)[-1]
 
         self.device              = device_id
@@ -152,15 +152,19 @@ class TextCNN(object):
             #     tf.random.uniform([self.vocab_size, self.embedding_dim], -1.0, 1.0),
             #     name="W") # 不用预训练embedding
             word_embeddings = tf.Variable(initial_value=self.embedding, trainable=True) # 使用预训练embedding模型
-            self.embedded_chars = tf.nn.embedding_lookup(word_embeddings, self.input_x)
-            self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)
+            # embedding_lookup根据self.input_x中对应的词语在词典中的id编号，寻找对应的词嵌入
+            # 例如：self.input_x[0]是"感冒"对应词表的id，self.input_x[1]是"disease"对应词表的id，则
+            # self.embedded_chars[0]是"感冒"对应的词嵌入，即word_embeddings中第self.input_x[0]个元素
+            # self.embedded_chars[1]是"disease"对应的词嵌入，即word_embeddings中第self.input_x[1]个元素
+            self.embedded_chars = tf.nn.embedding_lookup(word_embeddings, self.input_x) #shape=(?,20,200)
+            self.embedded_chars_expanded = tf.expand_dims(self.embedded_chars, -1)#shape=(?,20,200,1)
 
         # Create a convolution + maxpool layer for each filter size
         pooled_outputs = []
-        for i, filter_size in enumerate(self.filter_sizes):
+        for i, filter_size in enumerate(self.filter_sizes): #filter_sizes=[2,3,4]
             with tf.name_scope("conv-maxpool-%s" % filter_size):
                 # Convolution Layer
-                filter_shape = [filter_size, self.embedding_dim, 1, self.num_filters]
+                filter_shape = [filter_size, self.embedding_dim, 1, self.num_filters] #<class 'list'>: [2, 200, 1, 128]
                 W = tf.Variable(tf.random.truncated_normal(filter_shape, stddev=0.1), name="W")
                 b = tf.Variable(tf.constant(0.1, shape=[self.num_filters]), name="b")
                 conv = tf.nn.conv2d(
@@ -170,14 +174,14 @@ class TextCNN(object):
                     padding="VALID",
                     name="conv")
                 # Apply nonlinearity
-                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu")
+                h = tf.nn.relu(tf.nn.bias_add(conv, b), name="relu") #shape=(?,19,1,128)
                 # Maxpooling over the outputs
                 pooled = tf.nn.max_pool2d(
                     h,
                     ksize=[1, self.sequence_length - filter_size + 1, 1, 1],
                     strides=[1, 1, 1, 1],
                     padding='VALID',
-                    name="pool")
+                    name="pool") #shape=(?,1,1,128)
                 pooled_outputs.append(pooled)
 
         # Combine all the pooled features

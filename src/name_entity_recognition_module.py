@@ -42,12 +42,22 @@ class ner(object):
                     print('[INFO] input text is NULL, ERROR!')
                     return
 
+                # 处理输入的字符串，eg：'感冒吃什么药'
+                # words_x_list = <class 'list'>: [['感冒', '吃', '什么', '药']]
+                # output_x_list = <class 'list'>: [[2481, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+                # seq_len_list = <class 'list'>: [4]
                 words_x_list, output_x_list, seq_len_list = self.ner_data_loader.input_text_process(text)
 
                 feed_dict       = {self.ner_model.input_x: output_x_list,
                                    self.ner_model.sequence_lengths: seq_len_list,
                                    self.ner_model.dropout_keep_prob: self.ner_dropout_prob}
+                # feed_dict = <class 'dict'>: {
+                # <tf.Tensor 'input_word_id:0' shape=(?, 25) dtype=int32>: [[2481, 3, 4, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+                # <tf.Tensor 'sequence_lengths_vector:0' shape=(?,) dtype=int32>: [4],
+                # <tf.Tensor 'dropout_keep_prob:0' shape=<unknown> dtype=float32>: 0.5
+                # }
                 predicted_label = tf_session.run([self.ner_model.crf_labels], feed_dict) # predicted_label是三维的[1,1,25]，第1维包含了一个矩阵
+                # predicted_label = <class 'list'>: [array([[10,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0]])]
                 label_list      = list()
 
                 for idx in range(len(predicted_label[0])):
